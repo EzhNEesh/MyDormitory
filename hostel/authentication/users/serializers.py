@@ -12,6 +12,10 @@ class CustomUserSerializer(serializers.Serializer):
     # imageUrl = serializers.CharField(null=True)
     # user_id = serializers.PositiveBigIntegerField(unique=True)
 
+    """class Meta:
+        model = CustomUser
+        fields = ['id', 'email', 'fullname', 'phone']"""
+
     def create(self, validated_data):
         return CustomUser.objects.create_user(**validated_data)
 
@@ -25,3 +29,7 @@ class CustomUserSerializer(serializers.Serializer):
 
         instance.save()
         return instance
+
+    class UserRepresentation(serializers.RelatedField):
+        def to_representation(self, value):
+            return f'{value.id}'

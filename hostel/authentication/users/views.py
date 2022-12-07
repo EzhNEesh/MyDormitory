@@ -10,22 +10,13 @@ from .serializers import CustomUserSerializer
 class CustomUserView(APIView):
     def get(self, request, pk):
         user = get_object_or_404(CustomUser.objects.all(), pk=pk)
-        #user_id = request.query_params['id']
-        #user = User.objects.filter(id=user_id)
         serializer = CustomUserSerializer(user)
-        #users = User.objects.all()
-        #serializer = UserSerializer(users, many=True)
-        #user_id = User.objects.filter(id='2')
-        #ser_id = UserSerializer(user_id, many=True)
-        #, 'id': ser_id.data}
         return Response({
             "user": serializer.data
         })
 
     def post(self, request):
         user_data = request.data
-        #print('meow')
-        #print(user_data)
         serializer = CustomUserSerializer(data=user_data)
         if serializer.is_valid(raise_exception=True):
             user_saved = serializer.save()
@@ -48,8 +39,3 @@ class CustomUserView(APIView):
         return Response({
             "message": f"User with id '{pk}' has been deleted."
         }, status=204)
-
-"""
-    def post_user(self, request):
-        pass
-"""
