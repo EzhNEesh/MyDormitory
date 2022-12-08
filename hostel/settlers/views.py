@@ -54,7 +54,6 @@ class SettlersView(APIView):
         )
         if not settler:
             return Response("Not found", 404)
-        settler = get_object_or_404(Settlers.objects.all(), pk=pk)
         settler.delete()
         return Response({
             "message": f"Settler with id '{pk}' has been deleted."

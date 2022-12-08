@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'dormitory',
     'rooms',
     'settlers',
+    'students',
 ]
 
 MIDDLEWARE = [
