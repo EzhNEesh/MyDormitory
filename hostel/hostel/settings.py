@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'authentication',
     'authentication.users',
     'dormitory',
+    'rooms',
+    'settlers',
 ]
 
 MIDDLEWARE = [

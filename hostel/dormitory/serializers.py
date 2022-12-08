@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
-from .models import Dormitory
-from authentication.users.models import CustomUser
 from authentication.users.serializers import CustomUserSerializer
+
 
 class DormitorySerializer(serializers.Serializer):
 
@@ -12,8 +11,6 @@ class DormitorySerializer(serializers.Serializer):
     rooms_on_floor_count = serializers.IntegerField()
     places_in_room_count = serializers.IntegerField()
     university_info = serializers.CharField(max_length=100)
-    #user = CustomUserSerializer()
-    #user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
     user = CustomUserSerializer.UserRepresentation(read_only=True)
     """ class Meta():
         model = Dormitory
@@ -28,3 +25,7 @@ class DormitorySerializer(serializers.Serializer):
 
         instance.save()
         return instance
+
+    class DormitoryRepresentation(serializers.RelatedField):
+        def to_representation(self, value):
+            return f'{value.id}'

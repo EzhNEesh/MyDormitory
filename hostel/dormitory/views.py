@@ -4,19 +4,11 @@ from rest_framework.views import Response
 from rest_framework.generics import get_object_or_404
 
 from .models import Dormitory
-# from authentication.users.models import CustomUser
 from .serializers import DormitorySerializer
+from rooms.views import RoomsManager
 
 
 class DormitoryView(APIView):
-    def get(self, request, pk):
-        if not request.user.id:
-            return Response('unauthorized', 401)
-        dormitory = get_object_or_404(Dormitory.objects.all(), pk=pk, user=str(request.user.id))
-        serializer = DormitorySerializer(dormitory)
-        return Response({
-            "dormitory": serializer.data
-        })
 
     def get(self, request):
         if not request.user.id:
@@ -28,11 +20,33 @@ class DormitoryView(APIView):
         })
 
     def post(self, request):
+        if not request.user.id:
+            return Response('unauthorized', 401)
         dormitory_data = request.data
         dormitory_data['user'] = request.user
         dormitory = Dormitory.objects.create(**dormitory_data)
         serializer = DormitorySerializer(dormitory)
-        #return Response('meow')
+
+        rooms_data = {
+            'rooms_on_floor_count': dormitory_data['rooms_on_floor_count'],
+            'floors_count': dormitory_data['floors_count'],
+            'places_in_room_count': dormitory_data['places_in_room_count'],
+            'dormitory': dormitory
+        }
+        rooms_manager = RoomsManager()
+        rooms_manager.create_rooms(rooms_data)
+        return Response({
+            "dormitory": serializer.data
+        })
+
+
+class DormitoryPkView(APIView):
+
+    def get(self, request, pk):
+        if not request.user.id:
+            return Response('unauthorized', 401)
+        dormitory = get_object_or_404(Dormitory.objects.all(), pk=pk, user=request.user.id)
+        serializer = DormitorySerializer(dormitory)
         return Response({
             "dormitory": serializer.data
         })
