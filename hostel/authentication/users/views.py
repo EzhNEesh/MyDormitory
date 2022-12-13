@@ -11,7 +11,8 @@ class CustomUserView(APIView):
     def get(self, request, pk):
         user = get_object_or_404(CustomUser.objects.all(), pk=pk)
         serializer = CustomUserSerializer(user)
-        user_data = serializer.pop('password', None)
+        user_data = serializer.data
+        user_data.pop('password', None)
         return Response({
             "user": user_data
         })
