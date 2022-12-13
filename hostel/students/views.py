@@ -12,21 +12,16 @@ from settlers.serializers import SettlersSerializer
 
 
 class StudentsView(APIView):
-    """def get(self, request, dormitory_pk):
+    def get(self, request, dormitory_pk):
         dormitory = Dormitory.objects.get(
             id=dormitory_pk,
             user=request.user
         )
         if not dormitory:
             return Response("Unauthorized", 401)
-        room_id = students[0]['room']
-        room = Rooms.objects.get(id=room_id)
-        room_data = RoomsSerializer(room)
-        if not room_data or dormitory.id != int(room_data['dormitory']):
-            return Response("Unauthorized", 401)
-        students = Students.objects.all().filter()
+        students = Students.objects.all().filter(dormitory=dormitory.id)
         serializer = StudentsSerializer(students, many=True)
-        return Response({"students": serializer.data})"""
+        return Response({"students": serializer.data})
 
     def post(self, request, dormitory_pk):
         if not request.user.id:

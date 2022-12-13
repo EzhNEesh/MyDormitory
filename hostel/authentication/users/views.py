@@ -9,13 +9,16 @@ from .serializers import CustomUserSerializer
 
 class CustomUserView(APIView):
     def get(self, request, pk):
+        print(request.headers)
         user = get_object_or_404(CustomUser.objects.all(), pk=pk)
         serializer = CustomUserSerializer(user)
         user_data = serializer.data
         user_data.pop('password', None)
-        return Response({
+        res = Response({
             "user": user_data
         })
+        res.headers['Access-Control-Allow-Origin'] = True
+        return res
 
     def post(self, request):
         user_data = request.data
