@@ -41,10 +41,16 @@ class StudentsView(APIView):
         print(student_data == dormitory.id)
         if not student_data or int(student_data['dormitory']) != dormitory.id:
             return Response('Not found', 404)
-        student_data.pop('dormitory', None)
+        student_data['dormitory'] = dormitory
 
         room_id = request.data.get('room_id')
         room = get_object_or_404(Rooms, pk=room_id)
+        if int(room.free_places) == 0:
+            return Response({
+                "response": "the room is full"
+            }, status=500)
+        room.free_places -= 1
+        room.save()
         student_data['room'] = room
 
         student = Students.objects.create(**student_data)

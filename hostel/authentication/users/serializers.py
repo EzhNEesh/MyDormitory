@@ -7,14 +7,10 @@ class CustomUserSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=False)
     email = serializers.EmailField(max_length=50)
     fullname = serializers.CharField(max_length=50)
-    password = serializers.CharField(max_length=50)
+    password = serializers.CharField(max_length=50, required=False)
     phone = serializers.CharField(max_length=50)
     # imageUrl = serializers.CharField(null=True)
     # user_id = serializers.PositiveBigIntegerField(unique=True)
-
-    """class Meta:
-        model = CustomUser
-        fields = ['id', 'email', 'fullname', 'phone']"""
 
     def create(self, validated_data):
         return CustomUser.objects.create_user(**validated_data)

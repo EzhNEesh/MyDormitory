@@ -20,7 +20,8 @@ class RoomsManager():
                 Rooms.objects.create(
                     id=floor * rank + room,
                     floor=floor,
-                    dormitory=data['dormitory']
+                    dormitory=data['dormitory'],
+                    free_places=int(data['places_in_room_count'])
                 )
 
 class RoomsView(APIView):
