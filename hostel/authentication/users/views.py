@@ -18,7 +18,7 @@ class CustomUserView(APIView):
             "user": user_data
         })
 
-    def post(self, request):
+    def post(request):
         user_data = request.data
         serializer = CustomUserSerializer(data=user_data)
         if serializer.is_valid(raise_exception=True):

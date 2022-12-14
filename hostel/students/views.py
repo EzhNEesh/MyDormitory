@@ -48,7 +48,7 @@ class StudentsView(APIView):
         room.free_places -= 1
         room.save()
         student_data['room'] = room
-        dormitory.busy_places -= 1
+        dormitory.busy_places += 1
         dormitory.save()
 
         student = None

@@ -26,16 +26,22 @@ class DormitoryView(APIView):
             return Response('unauthorized', 401)
         dormitory_data = request.data
         dormitory_data['user'] = request.user
-        dormitory_data['busy_places'] = dormitory_data['rooms_on_floor_count'] * dormitory_data['floors_count'] * dormitory_data['places_in_room_count']
+        try:
+            dormitory_data['busy_places'] = 0
+        except KeyError:
+            return Response('Invalid data', 400)
         dormitory = Dormitory.objects.create(**dormitory_data)
         serializer = DormitorySerializer(dormitory)
 
-        rooms_data = {
-            'rooms_on_floor_count': dormitory_data['rooms_on_floor_count'],
-            'floors_count': dormitory_data['floors_count'],
-            'places_in_room_count': dormitory_data['places_in_room_count'],
-            'dormitory': dormitory
-        }
+        try:
+            rooms_data = {
+                'rooms_on_floor_count': dormitory_data['rooms_on_floor_count'],
+                'floors_count': dormitory_data['floors_count'],
+                'places_in_room_count': dormitory_data['places_in_room_count'],
+                'dormitory': dormitory
+            }
+        except KeyError:
+            return Response('Invalid data', 400)
         rooms_manager = RoomsManager()
         rooms_manager.create_rooms(rooms_data)
         return Response({
