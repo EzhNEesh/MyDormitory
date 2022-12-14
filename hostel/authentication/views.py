@@ -3,6 +3,7 @@ from rest_framework.views import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework.views import APIView
+from django.db.utils import IntegrityError
 
 from .users.serializers import CustomUserSerializer
 from .users.models import CustomUser
@@ -40,8 +41,8 @@ class RegisterView(TokenObtainPairView):
         if user_serializer.is_valid(raise_exception=True):
             try:
                 user_saved = user_serializer.save()
-            except:
-                return Response("Server ")
+            except IntegrityError:
+                return Response("Field email must be unique", 501)
 
         serializer = self.get_serializer(data=user_data)
         try:

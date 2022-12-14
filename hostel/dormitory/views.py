@@ -26,6 +26,7 @@ class DormitoryView(APIView):
             return Response('unauthorized', 401)
         dormitory_data = request.data
         dormitory_data['user'] = request.user
+        dormitory_data['busy_places'] = dormitory_data['rooms_on_floor_count'] * dormitory_data['floors_count'] * dormitory_data['places_in_room_count']
         dormitory = Dormitory.objects.create(**dormitory_data)
         serializer = DormitorySerializer(dormitory)
 

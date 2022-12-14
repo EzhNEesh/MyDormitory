@@ -11,6 +11,7 @@ class DormitorySerializer(serializers.Serializer):
     rooms_on_floor_count = serializers.IntegerField()
     places_in_room_count = serializers.IntegerField()
     university_info = serializers.CharField(max_length=100)
+    busy_places = serializers.IntegerField()
     user = CustomUserSerializer.UserRepresentation(read_only=True)
     """ class Meta():
         model = Dormitory

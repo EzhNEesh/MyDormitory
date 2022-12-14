@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.views import Response
 from rest_framework.generics import get_object_or_404
+from django.db.utils import IntegrityError
 
 from .models import Students
 from .serializers import StudentsSerializer
@@ -47,8 +48,14 @@ class StudentsView(APIView):
         room.free_places -= 1
         room.save()
         student_data['room'] = room
+        dormitory.busy_places -= 1
+        dormitory.save()
 
-        student = Students.objects.create(**student_data)
+        student = None
+        try:
+            student = Students.objects.create(**student_data)
+        except IntegrityError:
+            return Response('Email must be unique', 501)
         if not student:
             return Response("Invalid data", 501)
         settler.delete()
