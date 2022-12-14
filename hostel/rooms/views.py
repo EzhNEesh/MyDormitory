@@ -8,7 +8,6 @@ from dormitory.models import Dormitory
 
 
 class RoomsManager():
-
     def create_rooms(self, data):
         rank = 1
         buf = data['rooms_on_floor_count']
@@ -18,7 +17,7 @@ class RoomsManager():
         for floor in range(1, data['floors_count'] + 1):
             for room in range(1, data['rooms_on_floor_count'] + 1):
                 Rooms.objects.create(
-                    id=floor * rank + room,
+                    room_number=floor * rank + room,
                     floor=floor,
                     dormitory=data['dormitory'],
                     free_places=int(data['places_in_room_count'])
@@ -39,8 +38,8 @@ class RoomsView(APIView):
         serializer = RoomsSerializer(rooms, many=True)
         return Response({"rooms": serializer.data})
 
-class RoomsPkView(APIView):
 
+class RoomsPkView(APIView):
     def get(self, request, dormitory_pk, pk):
         if not request.user.id:
             return Response('unauthorized', 401)
@@ -50,6 +49,9 @@ class RoomsPkView(APIView):
         )
         if not dormitory:
             return Response("Dormitory not found or access denied", 404)
-        room = get_object_or_404(Rooms, pk=pk)
+        room = Rooms.objects.get(
+            room_number=pk,
+            dormitory=dormitory
+        )
         serializer = RoomsSerializer(room)
         return Response({"room": serializer.data})

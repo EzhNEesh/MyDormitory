@@ -41,8 +41,13 @@ class StudentsView(APIView):
             return Response('Settler not found or invalid dormitory', 404)
         student_data['dormitory'] = dormitory
 
-        room_id = request.data.get('room_id')
-        room = get_object_or_404(Rooms, pk=room_id)
+        room_number = request.data.get('room_number')
+        room = Rooms.objects.get(
+            room_number=room_number,
+            dormitory=dormitory
+        )
+        if not room:
+            return Response('Room not found', 404)
         if int(room.free_places) == 0:
             return Response('The room is full', status=501)
         room.free_places -= 1
@@ -76,8 +81,11 @@ class StudentsPkView(APIView):
             return Response("Dormitory not found or access denied", 404)
         student = get_object_or_404(Students, pk=pk)
         serializer = StudentsSerializer(student)
-        room_id = serializer.data['room']
-        room = Rooms.objects.get(id=room_id)
+        room_number = serializer.data['room']
+        room = Rooms.objects.get(
+            room_number=room_number,
+            dormitory=dormitory
+        )
         if not room or dormitory.id != room.dormitory.id:
             return Response("Room not found or invalid dormitory", 401)
         return Response({"student": serializer.data})
@@ -93,8 +101,11 @@ class StudentsPkView(APIView):
             return Response("Dormitory not found or access denied", 404)
         student = get_object_or_404(Students, pk=pk)
         serializer = StudentsSerializer(student)
-        room_id = serializer.data['room']
-        room = Rooms.objects.get(id=room_id)
+        room_number = serializer.data['room']
+        room = Rooms.objects.get(
+            room_number=room_number,
+            dormitory=dormitory
+        )
         if not room or dormitory.id != room.dormitory.id:
             return Response("Room not found or invalid dormitory", 401)
         student.delete()
