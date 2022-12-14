@@ -10,18 +10,20 @@ from dormitory.models import Dormitory
 class SettlersView(APIView):
 
     def get(self, request, dormitory_pk, pk):
+        if not request.user.id:
+            return Response('unauthorized', 401)
         dormitory = Dormitory.objects.get(
             id=dormitory_pk,
             user=request.user
         )
         if not dormitory:
-            return Response("Unauthorized", 401)
+            return Response("Dormitory not found or access denied", 404)
         settler = Settlers.objects.get(
             id=pk,
             dormitory=dormitory
         )
         if not settler:
-            return Response("Not found", 404)
+            return Response("Settler not found", 404)
         serializer = SettlersSerializer(settler)
         return Response({"rooms": serializer.data})
 
@@ -31,29 +33,31 @@ class SettlersView(APIView):
         settler_data = request.data
         dormitory = Dormitory.objects.get(id=dormitory_pk, user=request.user.id)
         if not dormitory:
-            return Response("Not found", 404)
+            return Response("Dormitory not found or access denied", 404)
         settler_data['dormitory'] = dormitory
         settler = Settlers.objects.create(**settler_data)
         if not settler:
-            return Response("Invalid data", 500)
+            return Response("Invalid data", 501)
         serializer = SettlersSerializer(settler)
         return Response({
             "settler": serializer.data
         })
 
     def delete(self, request, dormitory_pk, pk):
+        if not request.user.id:
+            return Response('unauthorized', 401)
         dormitory = Dormitory.objects.get(
             id=dormitory_pk,
             user=request.user
         )
         if not dormitory:
-            return Response("Unauthorized", 401)
+            return Response("Dormitory not found or access denied", 404)
         settler = Settlers.objects.get(
             id=pk,
             dormitory=dormitory
         )
         if not settler:
-            return Response("Not found", 404)
+            return Response("Settler not found", 404)
         settler.delete()
         return Response({
             "message": f"Settler with id '{pk}' has been deleted."

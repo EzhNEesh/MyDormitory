@@ -38,7 +38,10 @@ class RegisterView(TokenObtainPairView):
         user_data = request.data
         user_serializer = CustomUserSerializer(data=user_data)
         if user_serializer.is_valid(raise_exception=True):
-            user_saved = user_serializer.save()
+            try:
+                user_saved = user_serializer.save()
+            except:
+                return Response("Server ")
 
         serializer = self.get_serializer(data=user_data)
         try:

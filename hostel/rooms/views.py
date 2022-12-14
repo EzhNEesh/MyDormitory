@@ -27,12 +27,14 @@ class RoomsManager():
 class RoomsView(APIView):
 
     def get(self, request, dormitory_pk):
+        if not request.user.id:
+            return Response('unauthorized', 401)
         dormitory = Dormitory.objects.get(
             id=dormitory_pk,
             user=request.user
         )
         if not dormitory:
-            return Response("Unauthorized", 401)
+            return Response("Dormitory not found or access denied", 404)
         rooms = Rooms.objects.all().filter(dormitory=dormitory_pk)
         serializer = RoomsSerializer(rooms, many=True)
         return Response({"rooms": serializer.data})
@@ -40,12 +42,14 @@ class RoomsView(APIView):
 class RoomsPkView(APIView):
 
     def get(self, request, dormitory_pk, pk):
+        if not request.user.id:
+            return Response('unauthorized', 401)
         dormitory = Dormitory.objects.get(
             id=dormitory_pk,
             user=request.user
         )
         if not dormitory:
-            return Response("Unauthorized", 401)
+            return Response("Dormitory not found or access denied", 404)
         room = get_object_or_404(Rooms, pk=pk)
         serializer = RoomsSerializer(room)
         return Response({"room": serializer.data})
