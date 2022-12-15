@@ -19,11 +19,13 @@ class CustomUserView(APIView):
             "user": user_data
         })
 
-    def post(self, request):
-        data = UsersManager().create(request.data)
-        data.pop('password', None)
+    def post(request):
+        user_data = request.data
+        serializer = CustomUserSerializer(data=user_data)
+        if serializer.is_valid(raise_exception=True):
+            user_saved = serializer.save()
         return Response({
-            "user": data
+            "user": serializer.data
         })
 
     def put(self, request):
@@ -46,13 +48,3 @@ class CustomUserView(APIView):
         return Response({
             "message": f"User with id '{request.user.id}' has been deleted."
         }, status=204)
-
-
-class UsersManager:
-    @staticmethod
-    def create(data):
-        serializer = CustomUserSerializer(data=data)
-        if serializer.is_valid(raise_exception=True):
-            user_saved = serializer.save()
-        return serializer.data
-

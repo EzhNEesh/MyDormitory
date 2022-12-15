@@ -10,4 +10,4 @@ class SettlersSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=50)
     phone = serializers.CharField(max_length=50)
     flg = serializers.BooleanField()
-    dormitory = DormitorySerializer.DormitoryRepresentation(read_only=True)
+    # dormitory = DormitorySerializer.DormitoryRepresentation(read_only=True)
