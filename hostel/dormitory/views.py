@@ -35,9 +35,9 @@ class DormitoryView(APIView):
 
         try:
             rooms_data = {
-                'rooms_on_floor_count': dormitory_data['rooms_on_floor_count'],
-                'floors_count': dormitory_data['floors_count'],
-                'places_in_room_count': dormitory_data['places_in_room_count'],
+                'rooms_on_floor_count': int(dormitory_data['rooms_on_floor_count']),
+                'floors_count': int(dormitory_data['floors_count']),
+                'places_in_room_count': int(dormitory_data['places_in_room_count']),
                 'dormitory': dormitory
             }
         except KeyError:
