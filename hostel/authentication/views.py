@@ -7,6 +7,7 @@ from django.db.utils import IntegrityError
 
 from .users.serializers import CustomUserSerializer
 from .users.models import CustomUser
+from .users.views import UsersManager
 from .serializers import MyTokenObtainPairSerializer
 
 
@@ -36,24 +37,21 @@ class RegisterView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
-        user_data = request.data
-        user_serializer = CustomUserSerializer(data=user_data)
-        if user_serializer.is_valid(raise_exception=True):
-            try:
-                user_saved = user_serializer.save()
-            except IntegrityError:
-                return Response("Field email must be unique", 501)
+        create_data = request.data
+        try:
+            created_data = UsersManager().create(create_data)
+        except IntegrityError:
+            return Response("Field email must be unique", 501)
+        created_data.pop('password', None)
 
-        serializer = self.get_serializer(data=user_data)
+        serializer = self.get_serializer(data=create_data)
         try:
             serializer.is_valid(raise_exception=True)
         except TokenError as e:
             raise InvalidToken(e.args[0])
 
-        user_response = user_serializer.data
-        user_response.pop('password', None)
 
         return Response({
             "jwt": serializer.validated_data,
-            "user": user_response
+            "user": created_data
         }, status=status.HTTP_200_OK)

@@ -54,7 +54,6 @@ class DormitoryView(APIView):
 
 
 class DormitoryPkView(APIView):
-
     def get(self, request, pk):
         if not request.user.id:
             return Response('unauthorized', 401)
