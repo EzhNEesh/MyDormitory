@@ -47,7 +47,11 @@ class DormitoryView(APIView):
         except KeyError:
             return Response('Invalid data', 400)
         rooms_manager = RoomsManager()
-        rooms_manager.create_rooms(rooms_data)
+        try:
+            rooms_manager.create_rooms(rooms_data)
+        except Exception:
+            dormitory.delete()
+            return Response('Rooms create error', 501)
         return Response({
             "dormitory": serializer.data
         }, 201)

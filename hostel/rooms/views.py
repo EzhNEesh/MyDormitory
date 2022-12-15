@@ -1,27 +1,34 @@
 from rest_framework.views import APIView
 from rest_framework.views import Response
-from rest_framework.generics import get_object_or_404
+from django.db.utils import IntegrityError
 
 from .models import Rooms
 from .serializers import RoomsSerializer
 from dormitory.models import Dormitory
 
 
-class RoomsManager():
-    def create_rooms(self, data):
-        rank = 1
-        buf = data['rooms_on_floor_count']
-        while buf:
-            rank *= 10
-            buf //= 10
-        for floor in range(1, data['floors_count'] + 1):
-            for room in range(1, data['rooms_on_floor_count'] + 1):
-                Rooms.objects.create(
-                    room_number=floor * rank + room,
-                    floor=floor,
-                    dormitory=data['dormitory'],
-                    free_places=int(data['places_in_room_count'])
-                )
+class RoomsManager:
+    @staticmethod
+    def create_rooms(data):
+        try:
+            rank = 1
+            buf = data['rooms_on_floor_count']
+            while buf:
+                rank *= 10
+                buf //= 10
+            for floor in range(1, data['floors_count'] + 1):
+                for room in range(1, data['rooms_on_floor_count'] + 1):
+                    Rooms.objects.create(
+                        room_number=floor * rank + room,
+                        floor=floor,
+                        dormitory=data['dormitory'],
+                        free_places=int(data['places_in_room_count'])
+                    )
+        except TypeError:
+            raise TypeError
+        except IntegrityError:
+            raise IntegrityError
+
 
 class RoomsView(APIView):
 
