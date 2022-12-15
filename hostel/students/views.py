@@ -33,7 +33,7 @@ class StudentsView(APIView):
         if not dormitory:
             return Response("Dormitory not found or access denied", 404)
 
-        settler_id = request.data.get('settler_id')
+        settler_id = int(request.data.get('settler_id'))
         settler = get_object_or_404(Settlers, pk=settler_id)
         student_data = SettlersSerializer(settler).data
         print(student_data == dormitory.id)
@@ -41,7 +41,7 @@ class StudentsView(APIView):
             return Response('Settler not found or invalid dormitory', 404)
         student_data['dormitory'] = dormitory
 
-        room_number = request.data.get('room_number')
+        room_number = int(request.data.get('room_number'))
         room = Rooms.objects.get(
             room_number=room_number,
             dormitory=dormitory
@@ -67,7 +67,7 @@ class StudentsView(APIView):
         serializer = StudentsSerializer(student)
         return Response({
             "student": serializer.data
-        })
+        }, 201)
 
 class StudentsPkView(APIView):
     def get(self, request, dormitory_pk, pk):

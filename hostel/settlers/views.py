@@ -42,7 +42,7 @@ class SettlersView(APIView):
         serializer = SettlersSerializer(settler)
         return Response({
             "settler": serializer.data
-        })
+        }, 201)
 
 class SettlersPkView(APIView):
     def get(self, request, dormitory_pk, pk):

@@ -2,6 +2,7 @@
 from rest_framework.views import APIView
 from rest_framework.views import Response
 from rest_framework.generics import get_object_or_404
+from django.db.utils import IntegrityError
 
 from .models import Dormitory
 from .serializers import DormitorySerializer
@@ -30,7 +31,10 @@ class DormitoryView(APIView):
             dormitory_data['busy_places'] = 0
         except KeyError:
             return Response('Invalid data', 400)
-        dormitory = Dormitory.objects.create(**dormitory_data)
+        try:
+            dormitory = Dormitory.objects.create(**dormitory_data)
+        except IntegrityError:
+            return Response('Dormitory address must be unique', 501)
         serializer = DormitorySerializer(dormitory)
 
         try:
@@ -46,7 +50,7 @@ class DormitoryView(APIView):
         rooms_manager.create_rooms(rooms_data)
         return Response({
             "dormitory": serializer.data
-        })
+        }, 201)
 
 
 class DormitoryPkView(APIView):
