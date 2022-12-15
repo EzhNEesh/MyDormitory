@@ -36,8 +36,7 @@ class StudentsView(APIView):
         settler_id = int(request.data.get('settler_id'))
         settler = get_object_or_404(Settlers, pk=settler_id)
         student_data = SettlersSerializer(settler).data
-        print(student_data == dormitory.id)
-        if not student_data or int(student_data['dormitory']) != dormitory.id:
+        if not settler or int(settler.dormitory.id) != dormitory.id:
             return Response('Settler not found or invalid dormitory', 404)
         student_data['dormitory'] = dormitory
 
