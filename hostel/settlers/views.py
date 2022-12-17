@@ -30,7 +30,7 @@ class SettlersView(APIView):
         dormitory = Dormitory.objects.get(id=dormitory_pk, user=request.user.id)
         if not dormitory:
             return Response("Dormitory not found or access denied", 404)
-        if Students.objects.get(dormitory=dormitory.id, email=settler_data['email']):
+        if Students.objects.all().filter(dormitory=dormitory.id, email=settler_data['email']):
             return Response('Email must be unique', 501)
         settler_data['dormitory'] = dormitory
         settler = None
