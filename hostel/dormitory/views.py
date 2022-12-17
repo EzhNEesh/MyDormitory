@@ -15,8 +15,6 @@ class DormitoryView(APIView):
         if not request.user.id:
             return Response('unauthorized', 401)
         dormitories = Dormitory.objects.all().filter(user=str(request.user.id))
-        if not dormitories:
-            return Response('Dormitories not found or access denied', 404)
         serializer = DormitorySerializer(dormitories, many=True)
         return Response({
             "dormitories": serializer.data
