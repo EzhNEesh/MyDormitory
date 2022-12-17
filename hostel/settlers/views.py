@@ -6,6 +6,7 @@ from django.db.utils import IntegrityError
 from .models import Settlers
 from .serializers import SettlersSerializer
 from dormitory.models import Dormitory
+from students.models import Students
 
 
 class SettlersView(APIView):
@@ -19,8 +20,6 @@ class SettlersView(APIView):
         if not dormitory:
             return Response("Dormitory not found or access denied", 404)
         settlers = Settlers.objects.all().filter(dormitory=dormitory)
-        if not settlers:
-            return Response("Settlers not found", 404)
         serializer = SettlersSerializer(settlers, many=True)
         return Response({"settlers": serializer.data})
 
@@ -31,6 +30,8 @@ class SettlersView(APIView):
         dormitory = Dormitory.objects.get(id=dormitory_pk, user=request.user.id)
         if not dormitory:
             return Response("Dormitory not found or access denied", 404)
+        if Students.objects.get(dormitory=dormitory.id, email=settler_data['email']):
+            return Response('Email must be unique', 501)
         settler_data['dormitory'] = dormitory
         settler = None
         try:
