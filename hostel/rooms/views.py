@@ -41,7 +41,8 @@ class RoomsView(APIView):
         )
         if not dormitory:
             return Response("Dormitory not found or access denied", 404)
-        rooms = Rooms.objects.all().filter(dormitory=dormitory_pk)
+        partition, page = min(int(request.data.get('partition', 6)), 25), int(request.data.get('page', 1))
+        rooms = Rooms.objects.all().filter(dormitory=dormitory_pk)[(page - 1) * partition:page * partition]
         serializer = RoomsSerializer(rooms, many=True)
         return Response({"rooms": serializer.data})
 
