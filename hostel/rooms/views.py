@@ -32,7 +32,7 @@ class RoomsManager:
 
 class RoomsView(APIView):
 
-    def get(self, request, dormitory_pk):
+    def post(self, request, dormitory_pk):
         if not request.user.id:
             return Response('unauthorized', 401)
         dormitory = Dormitory.objects.get(
