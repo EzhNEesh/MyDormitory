@@ -75,7 +75,7 @@ class SettlersPkView(APIView):
             return Response("Dormitory not found or access denied", 404)
         settler = Settlers.objects.get(
             id=pk,
-            dormitory=dormitory
+            dormitory=dormitory.id
         )
         if not settler:
             return Response("Settler not found", 404)
