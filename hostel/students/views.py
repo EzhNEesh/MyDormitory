@@ -90,6 +90,62 @@ class StudentsPkView(APIView):
             return Response("Room not found or invalid dormitory", 401)
         return Response({"student": serializer.data})
 
+    def put(self, request, dormitory_pk, pk):
+        if not request.user.id:
+            return Response('unauthorized', 401)
+        dormitory = Dormitory.objects.get(
+            id=dormitory_pk,
+            user=request.user
+        )
+        if not dormitory:
+            return Response("Dormitory not found or access denied", 404)
+        new_data = request.data
+
+        student = get_object_or_404(Students, pk=pk)
+        room_number = student.room.room_number
+        room = Rooms.objects.get(
+            room_number=room_number,
+            dormitory=dormitory
+        )
+        if not room or dormitory.id != room.dormitory.id:
+            return Response("Room not found or invalid dormitory", 401)
+        new_room_number = new_data.get('room')
+        new_room = None
+
+        if new_room_number:
+            try:
+                new_room = Rooms.objects.get(
+                    room_number=new_room_number,
+                    dormitory=dormitory
+                )
+                if new_room.free_places == 0:
+                    raise Exception('The room is full')
+            except IntegrityError:
+                return Response("The room does not exist", 501)
+            except Exception as e:
+                return Response(str(e), 501)
+
+        student.fullname = new_data.get('fullname', student.fullname)
+        student.email = new_data.get('email', student.email)
+        student.phone = new_data.get('phone', student.phone)
+        student.flg = new_data.get('flg', student.flg)
+        if new_room_number:
+            try:
+                room.free_places += 1
+                room.save()
+
+                new_room.free_places -= 1
+                new_room.save()
+
+                student.room = new_room
+                student.save()
+            except IntegrityError:
+                return Response("Invalid student's update data", 501)
+        serializer = StudentsSerializer(student)
+        return Response({
+            "student": serializer.data
+        }, status=204)
+
     def delete(self, request, dormitory_pk, pk):
         if not request.user.id:
             return Response('unauthorized', 401)
