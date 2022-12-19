@@ -36,6 +36,7 @@ class StudentsView(APIView):
         settler_id = int(request.data.get('settler_id'))
         settler = get_object_or_404(Settlers, pk=settler_id)
         student_data = SettlersSerializer(settler).data
+        student_data.pop('id')
         if not settler or int(settler.dormitory.id) != dormitory.id:
             return Response('Settler not found or invalid dormitory', 404)
         student_data['dormitory'] = dormitory
@@ -107,6 +108,8 @@ class StudentsPkView(APIView):
         )
         if not room or dormitory.id != room.dormitory.id:
             return Response("Room not found or invalid dormitory", 401)
+        room.free_places += 1
+        room.save()
         student.delete()
         return Response({
             "message": f"Student with id '{pk}' has been deleted."
