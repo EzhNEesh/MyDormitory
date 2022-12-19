@@ -25,6 +25,7 @@ class DormitoryView(APIView):
             return Response('unauthorized', 401)
         dormitory_data = request.data
         dormitory_data['user'] = request.user
+        places = dormitory_data.pop('places_in_room_count')
         try:
             dormitory_data['busy_places'] = 0
         except KeyError:
@@ -39,8 +40,8 @@ class DormitoryView(APIView):
             rooms_data = {
                 'rooms_on_floor_count': int(dormitory_data['rooms_on_floor_count']),
                 'floors_count': int(dormitory_data['floors_count']),
-                'places_in_room_count': int(dormitory_data['places_in_room_count']),
-                'dormitory': dormitory
+                'places_in_room_count': int(places),
+                'dormitory': dormitory,
             }
         except KeyError:
             return Response('Invalid data', 400)

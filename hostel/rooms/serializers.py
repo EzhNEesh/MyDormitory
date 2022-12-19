@@ -8,6 +8,7 @@ class RoomsSerializer(serializers.Serializer):
     room_number = serializers.IntegerField()
     floor = serializers.IntegerField()
     free_places = serializers.IntegerField()
+    places = serializers.IntegerField()
     dormitory = DormitorySerializer.DormitoryRepresentation(read_only=True)
 
     class RoomsRepresentation(serializers.RelatedField):

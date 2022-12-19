@@ -6,7 +6,7 @@ from dormitory.models import Dormitory
 
 class Students(models.Model):
     fullname = models.CharField(max_length=50)
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('email address'))
     phone = models.CharField(max_length=50)
     flg = models.BooleanField(default=False)
     room = models.ForeignKey(Rooms, on_delete=models.CASCADE)

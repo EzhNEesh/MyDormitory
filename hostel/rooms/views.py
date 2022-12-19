@@ -22,7 +22,8 @@ class RoomsManager:
                         room_number=floor * rank + room,
                         floor=floor,
                         dormitory=data['dormitory'],
-                        free_places=int(data['places_in_room_count'])
+                        free_places=int(data['places_in_room_count']),
+                        places=int(data['places_in_room_count'])
                     )
         except TypeError:
             raise TypeError
@@ -31,7 +32,6 @@ class RoomsManager:
 
 
 class RoomsView(APIView):
-
     def post(self, request, dormitory_pk):
         if not request.user.id:
             return Response('unauthorized', 401)
