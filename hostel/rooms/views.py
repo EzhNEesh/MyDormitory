@@ -5,6 +5,8 @@ from django.db.utils import IntegrityError
 from .models import Rooms
 from .serializers import RoomsSerializer
 from dormitory.models import Dormitory
+from students.models import Students
+from students.serializers import StudentsSerializer
 
 
 class RoomsManager:
@@ -63,3 +65,31 @@ class RoomsPkView(APIView):
         )
         serializer = RoomsSerializer(room)
         return Response({"room": serializer.data})
+
+class RoomsStudents(APIView):
+    def get(self, request, dormitory_pk, pk):
+        if not request.user.id:
+            return Response('unauthorized', 401)
+        dormitory = Dormitory.objects.get(
+            id=dormitory_pk,
+            user=request.user
+        )
+        if not dormitory:
+            return Response("Dormitory not found or access denied", 404)
+
+        try:
+            room = Rooms.objects.get(
+                room_number=pk,
+                dormitory=dormitory
+            )
+        except IntegrityError:
+            return Response("Room not found or invalid dormitory", 501)
+
+        students = Students.objects.all().filter(
+            room=room,
+            dormitory=dormitory
+        )
+        serializer = StudentsSerializer(students, many=True)
+        return Response({
+            "students": serializer.data
+        }, 200)
